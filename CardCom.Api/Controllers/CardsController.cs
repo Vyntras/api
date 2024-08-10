@@ -2,7 +2,6 @@ using CardCom.Api.Data;
 using CardCom.Api.Models;
 using CardCom.Api.Dtos.Card;
 using Microsoft.AspNetCore.Mvc;
-using CardCom.Api.Mappers;
 using Microsoft.EntityFrameworkCore;
 using CardCom.Api.Interfaces;
 
@@ -17,11 +16,14 @@ public class CardsController : ControllerBase
     private readonly ILogger<CardsController> _logger;
 
     private readonly ICardRepository _cardRepo;
-    public CardsController(AppDbContext context, ILogger<CardsController> logger, ICardRepository cardRepo)
+
+    private readonly IUserRepository _userRepo;
+    public CardsController(AppDbContext context, ILogger<CardsController> logger, ICardRepository cardRepo, IUserRepository userRepo)
     {
         _context = context;
         _logger = logger;
         _cardRepo = cardRepo;
+        _userRepo = userRepo;
 
     }
 
@@ -34,7 +36,7 @@ public class CardsController : ControllerBase
     [HttpGet(Name = "GetCards")]
     public async Task<ActionResult<IEnumerable<Card>>> GetList()
     {
-        
+
         try
         {
             var cards = await _cardRepo.GetAllAsync();
@@ -91,17 +93,24 @@ public class CardsController : ControllerBase
     [HttpPost(Name = "CreateCard")]
     public async Task<IActionResult> Create([FromBody] CreateCardRequestDto card)
     {
-
-        if(!ModelState.IsValid) return BadRequest(ModelState);
-
         try
         {
-            var cardModal = card.CreateCardFromDto();
-            await _context.Cards.AddAsync(cardModal);
-            await _context.SaveChangesAsync();
+            var token = Request.Cookies["auth_token"];
+            if (token == null) return Unauthorized();
+            var user = await _userRepo.ValidateGoogleToken(token);
+            
+            
+            // if (!ModelState.IsValid) return BadRequest(ModelState);
+            // Console.WriteLine(user.id);
+            // var cardModel = card.CreateCardFromDto(user.id);
+            // // await _context.Cards.AddAsync(cardModal);
+            // // await _context.SaveChangesAsync();
+            // await _cardRepo.CreateAsync(cardModel);
+            
 
-            _logger.LogInformation($"Card id:{cardModal.id} created");
-            return CreatedAtAction(nameof(GetById), new { id = cardModal.id }, card);
+            // _logger.LogInformation($"Card id:{cardModel.id} created");
+            // return CreatedAtAction(nameof(GetById), new { id = cardModel.id }, card);
+            return Ok(user);
         }
         catch (Exception e)
         {
@@ -118,69 +127,69 @@ public class CardsController : ControllerBase
 
 
 
-    [HttpPut("{id:int}", Name = "UpdateCard")]
-    public async Task<ActionResult<Card>> Update([FromRoute] int id, [FromBody] UpdateCardRequestDto cardUpdateDto)
-    {
+    // [HttpPut("{id:int}", Name = "UpdateCard")]
+    // public async Task<ActionResult<Card>> Update([FromRoute] int id, [FromBody] UpdateCardRequestDto cardUpdateDto)
+    // {
 
-        if(!ModelState.IsValid) return BadRequest(ModelState);
+    //     if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        try
-        {
-            var cardModel = await _context.Cards.FirstOrDefaultAsync(x => x.id == id);
+    //     try
+    //     {
+    //         var cardModel = await _context.Cards.FirstOrDefaultAsync(x => x.id == id);
 
-            if (cardModel == null)
-            {
-                return NotFound();
-            }
+    //         if (cardModel == null)
+    //         {
+    //             return NotFound();
+    //         }
 
-            cardModel.price = cardUpdateDto.price;
-            cardModel.description = cardUpdateDto.description;
+    //         cardModel.price = cardUpdateDto.price;
+    //         cardModel.description = cardUpdateDto.description;
 
-            await _context.SaveChangesAsync();
+    //         await _context.SaveChangesAsync();
 
-            _logger.LogInformation($"Card id:{id} updated");
-            return Ok(cardModel);
-        }
-        catch (Exception e)
-        {
-            string message = $"An unexpected error occured while updating the card id:{id}";
-            _logger.LogError(e, message, cardUpdateDto);
-            return StatusCode(500, message);
-        }
-
-
-
-    }
+    //         _logger.LogInformation($"Card id:{id} updated");
+    //         return Ok(cardModel);
+    //     }
+    //     catch (Exception e)
+    //     {
+    //         string message = $"An unexpected error occured while updating the card id:{id}";
+    //         _logger.LogError(e, message, cardUpdateDto);
+    //         return StatusCode(500, message);
+    //     }
 
 
 
+    // }
 
 
-    [HttpDelete("{id}", Name = "DeleteCard")]
-    public async Task<IActionResult> Delete([FromRoute] int id)
-    {
-        try
-        {
-            var cardModel = await _context.Cards.FirstOrDefaultAsync(x => x.id == id);
-
-            if (cardModel == null)
-            {
-                return NotFound();
-            }
-
-            _context.Cards.Remove(cardModel);
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation($"Card id:{id} deleted");
-            return NoContent();
-        }
-        catch (Exception e)
-        {
-            string message = $"An unexpected error occured while deleting the card id:{id}";
-            _logger.LogError(e, message);
-            return StatusCode(500, message);
-        }
 
 
-    }
+
+    // [HttpDelete("{id}", Name = "DeleteCard")]
+    // public async Task<IActionResult> Delete([FromRoute] int id)
+    // {
+    //     try
+    //     {
+    //         var cardModel = await _context.Cards.FirstOrDefaultAsync(x => x.id == id);
+
+    //         if (cardModel == null)
+    //         {
+    //             return NotFound();
+    //         }
+
+    //         _context.Cards.Remove(cardModel);
+    //         await _context.SaveChangesAsync();
+
+    //         _logger.LogInformation($"Card id:{id} deleted");
+    //         return NoContent();
+    //     }
+    //     catch (Exception e)
+    //     {
+    //         string message = $"An unexpected error occured while deleting the card id:{id}";
+    //         _logger.LogError(e, message);
+    //         return StatusCode(500, message);
+    //     }
+
+
+    // }
 }

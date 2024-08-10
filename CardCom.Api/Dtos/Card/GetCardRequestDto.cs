@@ -1,10 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CardCom.Api.Dtos.Card;
+namespace CardCom.Api.Models;
 
-public class CreateCardRequestDto
+public class GetCardRequestDto
 {
+
+    public int id { get; set; }
+
+    public DateTime createdAt { get; set; } = DateTime.UtcNow;
 
     [Required(ErrorMessage = "Name is required.")]
     // [MinLength(1, ErrorMessage = "Name cannot be empty.")]
@@ -18,9 +22,4 @@ public class CreateCardRequestDto
     [Range(0.01, double.MaxValue, ErrorMessage = "Price must be at least 0.01")]
     [Column(TypeName = "decimal(18,2)")]
     public decimal price { get; set; }
-
-    [Required]
-    public int UserId { get; set; }
-
-
 }

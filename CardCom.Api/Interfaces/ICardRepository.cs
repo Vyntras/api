@@ -11,9 +11,9 @@ public interface ICardRepository
 
     Task<Card?> GetByIdAsync(int id);
 
-    Task<Card> CreateAsync(Card cardModel);
+    // Task<Card> CreateAsync(Card cardModel);
 
-    Task<Card?> UpdateAsync(int id, UpdateCardRequestDto cardDto);
+    // Task<Card?> UpdateAsync(int id, UpdateCardRequestDto cardDto);
 
-    Task<Card?> DeleteAsync(int id);
+    // Task<Card?> DeleteAsync(int id);
 }

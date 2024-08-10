@@ -63,84 +63,84 @@ public class CardRepository : ICardRepository
 
 
 
-    public async Task<Card> CreateAsync(Card cardModel)
-    {
-        try
-        {
-            await _context.Cards.AddAsync(cardModel);
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while inserting a card in the database.");
-            throw;
-        }
+    // public async Task<Card> CreateAsync(Card cardModel)
+    // {
+    //     try
+    //     {
+    //         await _context.Cards.AddAsync(cardModel);
+    //         await _context.SaveChangesAsync();
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError(ex, "An error occurred while inserting a card in the database.");
+    //         throw;
+    //     }
 
 
 
-        return cardModel;
-    }
-
-
-
-
-    public async Task<Card?> UpdateAsync(int id, UpdateCardRequestDto cardDto)
-    {
-        try
-        {
-            var cardModel = await _context.Cards.FirstOrDefaultAsync(x => x.id == id);
-
-            if (cardModel == null)
-            {
-                return null;
-            }
-
-            cardModel.price = cardDto.price;
-            cardModel.description = cardDto.description;
-
-            await _context.SaveChangesAsync();
-
-            return cardModel;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while updating a card in the database.");
-            throw;
-        }
+    //     return cardModel;
+    // }
 
 
 
 
+    // public async Task<Card?> UpdateAsync(int id, UpdateCardRequestDto cardDto)
+    // {
+    //     try
+    //     {
+    //         var cardModel = await _context.Cards.FirstOrDefaultAsync(x => x.id == id);
 
+    //         if (cardModel == null)
+    //         {
+    //             return null;
+    //         }
 
-    }
+    //         cardModel.price = cardDto.price;
+    //         cardModel.description = cardDto.description;
 
-    public async Task<Card?> DeleteAsync(int id)
-    {
+    //         await _context.SaveChangesAsync();
 
-        try
-        {
-            var cardModel = await _context.Cards.FirstOrDefaultAsync(x => x.id == id);
-
-            if (cardModel == null)
-            {
-                return null;
-            }
-
-            _context.Cards.Remove(cardModel);
-            await _context.SaveChangesAsync();
-
-            return cardModel;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while deleting a card in the database.");
-            throw;
-        }
+    //         return cardModel;
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError(ex, "An error occurred while updating a card in the database.");
+    //         throw;
+    //     }
 
 
 
-    }
+
+
+
+    // }
+
+    // public async Task<Card?> DeleteAsync(int id)
+    // {
+
+    //     try
+    //     {
+    //         var cardModel = await _context.Cards.FirstOrDefaultAsync(x => x.id == id);
+
+    //         if (cardModel == null)
+    //         {
+    //             return null;
+    //         }
+
+    //         _context.Cards.Remove(cardModel);
+    //         await _context.SaveChangesAsync();
+
+    //         return cardModel;
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError(ex, "An error occurred while deleting a card in the database.");
+    //         throw;
+    //     }
+
+
+
+    // }
 
 
 

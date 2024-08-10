@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CardCom.Api.Models;
 
-public class Card
+public class Pack
 {
 
     public int id { get; set; }
@@ -17,21 +17,13 @@ public class Card
 
     public bool onSale {get; set;} = false;
 
-    [Required]
     [Range(0, 1, ErrorMessage = "The value must be between 0 and 1.")]
     [RegularExpression(@"^0(\.\d{1,3})?$|^1(\.0{1,3})?$", ErrorMessage = "The value must be between 0 and 1 with up to 3 decimal places.")]
-    public decimal condition { get; set; }
-
-    [Required]
-    public int collectionId {get; set;}
-
-    [Required]
-    public Collection Collection { get; set; } = null!;
+    public decimal rarity { get; set; }
 
     [Required]
     public int ownerId { get; set; }
 
-    // Navigation property to represent the user who owns the card
     [Required]
     public User Owner { get; set; } = null!;
 }
