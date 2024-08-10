@@ -1,6 +1,6 @@
 using CardCom.Api.Data;
 using CardCom.Api.Models;
-using CardCom.Api.Dtos.Card;
+// using CardCom.Api.Dtos.Card;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CardCom.Api.Interfaces;
@@ -90,37 +90,37 @@ public class CardsController : ControllerBase
 
 
 
-    [HttpPost(Name = "CreateCard")]
-    public async Task<IActionResult> Create([FromBody] CreateCardRequestDto card)
-    {
-        try
-        {
-            var token = Request.Cookies["auth_token"];
-            if (token == null) return Unauthorized();
-            var user = await _userRepo.ValidateGoogleToken(token);
+    // [HttpPost(Name = "CreateCard")]
+    // public async Task<IActionResult> Create([FromBody] CreateCardRequestDto card)
+    // {
+    //     try
+    //     {
+    //         var token = Request.Cookies["auth_token"];
+    //         if (token == null) return Unauthorized();
+    //         var user = await _userRepo.ValidateGoogleToken(token);
             
             
-            // if (!ModelState.IsValid) return BadRequest(ModelState);
-            // Console.WriteLine(user.id);
-            // var cardModel = card.CreateCardFromDto(user.id);
-            // // await _context.Cards.AddAsync(cardModal);
-            // // await _context.SaveChangesAsync();
-            // await _cardRepo.CreateAsync(cardModel);
+    //         // if (!ModelState.IsValid) return BadRequest(ModelState);
+    //         // Console.WriteLine(user.id);
+    //         // var cardModel = card.CreateCardFromDto(user.id);
+    //         // // await _context.Cards.AddAsync(cardModal);
+    //         // // await _context.SaveChangesAsync();
+    //         // await _cardRepo.CreateAsync(cardModel);
             
 
-            // _logger.LogInformation($"Card id:{cardModel.id} created");
-            // return CreatedAtAction(nameof(GetById), new { id = cardModel.id }, card);
-            return Ok(user);
-        }
-        catch (Exception e)
-        {
-            string message = $"An unexpected error occured while creating a card";
-            _logger.LogError(e, message, card);
-            return StatusCode(500, message);
-        }
+    //         // _logger.LogInformation($"Card id:{cardModel.id} created");
+    //         // return CreatedAtAction(nameof(GetById), new { id = cardModel.id }, card);
+    //         return Ok(user);
+    //     }
+    //     catch (Exception e)
+    //     {
+    //         string message = $"An unexpected error occured while creating a card";
+    //         _logger.LogError(e, message, card);
+    //         return StatusCode(500, message);
+    //     }
 
 
-    }
+    // }
 
 
 
