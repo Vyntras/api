@@ -79,7 +79,7 @@ public class AuthController : ControllerBase
 
             var cookieOptions = new CookieOptions
             {
-                Domain = _configuration["Domain"], // Use "localhost" to ensure the cookie is set for the client
+                Domain = _configuration["Domain:Cookie"], // Use "localhost" to ensure the cookie is set for the client
                 Path = "/",
                 HttpOnly = true,  // Set HttpOnly to true if you don't need access via JavaScript
                 Secure = environment == "Production" ? true:false,   // Secure should be false because you are on HTTP in development
@@ -89,7 +89,7 @@ public class AuthController : ControllerBase
 
             Response.Cookies.Append("auth_token", token, cookieOptions);
 
-            return Redirect(_configuration["Cors:AllowedOrigins"]!);
+            return Redirect(_configuration["Domain:Url"]!);
 
             // return Ok(user);
         }
