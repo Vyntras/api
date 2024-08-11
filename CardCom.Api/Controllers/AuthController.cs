@@ -29,10 +29,10 @@ public class AuthController : ControllerBase
 
     }
 
-    public class TokenRequest
-    {
-        public string tokenId { get; set; } = string.Empty;
-    }
+    // public class TokenRequest
+    // {
+    //     public string tokenId { get; set; } = string.Empty;
+    // }
 
 
     // [HttpPost(Name = "Authenticate")]
@@ -79,7 +79,7 @@ public class AuthController : ControllerBase
 
             var cookieOptions = new CookieOptions
             {
-                Domain = "localhost", // Use "localhost" to ensure the cookie is set for the client
+                Domain = _configuration["Domain"], // Use "localhost" to ensure the cookie is set for the client
                 Path = "/",
                 HttpOnly = true,  // Set HttpOnly to true if you don't need access via JavaScript
                 Secure = environment == "Production" ? true:false,   // Secure should be false because you are on HTTP in development
@@ -89,7 +89,7 @@ public class AuthController : ControllerBase
 
             Response.Cookies.Append("auth_token", token, cookieOptions);
 
-            return Redirect("http://localhost:3000");
+            return Redirect(_configuration["Cors:AllowedOrigins"]!);
 
             // return Ok(user);
         }
@@ -99,26 +99,6 @@ public class AuthController : ControllerBase
             _logger.LogError(ex, message, HttpContext.TraceIdentifier);
             return StatusCode(500, message);
         }
-
-
-
-
-        // var cookieOptions = new CookieOptions
-        // {
-        //     Domain = "localhost", // Use "localhost" to ensure the cookie is set for the client
-        //     Path = "/",
-        //     HttpOnly = true,  // Set HttpOnly to true if you don't need access via JavaScript
-        //     Secure = false,   // Secure should be false because you are on HTTP in development
-        //     SameSite = SameSiteMode.Lax, // Necessary to allow cross-origin cookies
-        //     Expires = DateTimeOffset.UtcNow.AddHours(1) // Optional: set an appropriate expiration
-        // };
-
-        // Response.Cookies.Append("YourCookieName", "YourCookieValue", cookieOptions);
-
-        // return Redirect("http://localhost:3000");
-
-
-
 
 
     }
