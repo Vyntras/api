@@ -1,8 +1,10 @@
+using System.Text.Json;
 using CardCom.Api.Data;
 using CardCom.Api.Dtos.User;
 using CardCom.Api.Interfaces;
 using CardCom.Api.Models;
 using Google.Apis.Auth;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 namespace CardCom.Api.Repositories;
 
@@ -15,11 +17,14 @@ public class UserRepository : IUserRepository
     private readonly ILogger<CardRepository> _logger;
 
     private readonly IConfiguration _configuration;
-    public UserRepository(AppDbContext context, ILogger<CardRepository> logger, IConfiguration configuration)
+
+    private readonly HttpClient _httpClient;
+    public UserRepository(AppDbContext context, ILogger<CardRepository> logger, IConfiguration configuration, HttpClient httpClient)
     {
         _context = context;
         _logger = logger;
         _configuration = configuration;
+        _httpClient = httpClient;
     }
     private async Task<GetUserRequestDto> FindOrCreateUserAsync(GoogleJsonWebSignature.Payload payload)
     {
@@ -59,7 +64,7 @@ public class UserRepository : IUserRepository
                 //     createdAt = c.createdAt
                 // }).ToList()
             };
-            
+
 
             // var userDto = GetUse
 
@@ -95,6 +100,61 @@ public class UserRepository : IUserRepository
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while authenticating");
+            throw;
+        }
+
+
+
+    }
+
+    private class GoogleTokenResponse
+    {
+        public string id_token { get; set; } = string.Empty;
+    }
+
+    public async Task<string> ValidateGoogleCode(string code)
+    {
+
+
+        // Prepare the request body
+        var formData = new Dictionary<string, string>
+        {
+            { "code", code },
+            { "client_id", _configuration["Authentication:Google:ClientId"]! },
+            { "client_secret", _configuration["Authentication:Google:ClientSecret"]! },
+            { "redirect_uri", _configuration["Authentication:Google:RedirectUri"]! },
+            { "grant_type", "authorization_code" }
+        };
+
+        var requestContent = new FormUrlEncodedContent(formData);
+
+        try
+        {
+
+
+            // Send the POST request
+            var response = await _httpClient.PostAsync("https://oauth2.googleapis.com/token", requestContent);
+
+            // Ensure the request was successful
+            response.EnsureSuccessStatusCode();
+
+            // Read the response content
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            // Read and deserialize the response content
+            var data = await response.Content.ReadAsStringAsync();
+
+            var tokenResponse = JsonSerializer.Deserialize<GoogleTokenResponse>(responseContent);
+
+            Console.WriteLine(tokenResponse!.id_token);
+
+
+
+            return tokenResponse!.id_token;
+
+        }
+        catch
+        {
             throw;
         }
 
